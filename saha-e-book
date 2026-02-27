@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAHAYARAJ ADMIN PRO v81 - BELL ICON UPDATE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root { 
+            --p-bg: #0f172a; --n-col: #ffffff; --out: #000; --btm: #000; 
+            --c-let: #475569; --c-num: #1e40af; --n-out: transparent; 
+        }
+        body { background-color: #475569; font-family: 'Arial Black', sans-serif; font-weight: 950; }
+        .main-app-box { border: 12px solid var(--out); margin: 10px auto; border-radius: 40px; background: #f1f5f9; overflow-x: hidden; transition: 0.3s; }
+        .premium-header { background-color: var(--p-bg); padding: 15px 25px; border-bottom: 12px solid var(--out); border-radius: 28px 28px 0 0; position: relative; }
+        #dispTitle { color: var(--n-col); -webkit-text-stroke: 1.5px var(--n-out); }
+        .cat-card { background: #fff; border: 5px solid var(--out); border-bottom: 10px solid var(--btm) !important; border-radius: 20px; text-align: center; }
+        .entry-dash, .filter-dash { background: #fff; border-radius: 30px; border: 4px solid var(--out); border-bottom: 10px solid var(--btm) !important; padding: 20px; }
+        .table-area { border-bottom: 12px solid var(--btm); }
+        .btn-style { border-bottom: 6px solid #000; cursor: pointer; text-transform: uppercase; transition: 0.1s; }
+        .btn-style:active { transform: translateY(3px); border-bottom-width: 3px; }
+        .cp-card { background: #fff; width: 98%; max-width: 1400px; border-radius: 40px; padding: 25px; border: 12px solid #000; max-height: 95vh; overflow-y: auto; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 6px 12px; border: 2.5px solid #000; border-radius: 12px; margin-bottom: 4px; font-size: 11px; }
+        .blur-val { filter: blur(12px); opacity: 0.2; }
+        #secretSettingsBtn { position: absolute; top: 0; right: 0; width: 80px; height: 80px; cursor: pointer; z-index: 50; }
+        .gear-hidden { opacity: 0; }
+        .filter-btn-active { background-color: #ef4444 !important; border: 3px solid #000 !important; }
+        /* Bell Icon Layout */
+        .bell-box { display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; }
+    </style>
+</head>
+<body>
+
+<div id="loginPage" class="flex items-center justify-center h-screen bg-slate-900">
+    <div class="bg-white p-10 rounded-[50px] border-[10px] border-black text-center w-[450px]">
+        <h1 class="text-3xl mb-8 italic text-blue-900" id="loginTitleDisp">SAHAYARAJ ADMIN</h1>
+        <div id="loginSwArea" class="flex justify-around mb-8 bg-gray-100 p-4 rounded-2xl border-2 border-black">
+            <div id="lSwG" class="text-xs font-black uppercase">Grand Total <br><input type="checkbox" id="swGrand" checked class="w-6 h-6"></div>
+            <div id="lSwC" class="text-xs font-black uppercase">Category <br><input type="checkbox" id="swCat" checked class="w-6 h-6"></div>
+        </div>
+        <div class="mb-8">
+            <p class="text-left ml-2 mb-1 uppercase text-xs font-black">Password 🔑</p>
+            <input type="password" id="loginPass" class="text-center text-5xl p-2 border-4 border-black rounded-2xl outline-none w-full font-black">
+        </div>
+        <button onclick="handleLogin()" class="w-full bg-blue-700 text-white py-5 rounded-2xl text-2xl btn-style font-black">LOGIN ✅</button>
+    </div>
+</div>
+
+<div id="appPage" class="hidden">
+    <div id="mainContainer" class="main-app-box mx-auto">
+        <div class="premium-header flex justify-between items-center">
+            <div id="secretSettingsBtn" onclick="openSettings()"></div>
+            <div class="flex items-center gap-3">
+                <div class="bell-box">
+                    <button onclick="location.reload()" id="backBtn" class="bg-red-600 w-10 h-10 rounded-full border-2 border-black text-white text-sm z-20">⬅</button>
+                    <button onclick="openBellDate()" class="bg-yellow-400 w-10 h-10 rounded-full border-2 border-black text-xl z-20 shadow-md">🔔</button>
+                    <input type="date" id="bellStartDate" onchange="setStartingDate()" class="absolute opacity-0 pointer-events-none" style="top:45px">
+                </div>
+                <div>
+                    <h1 id="dispTitle" class="text-3xl italic uppercase"></h1>
+                    <div id="dateTimeBox" class="flex gap-4 font-bold text-white"><span id="headerDate"></span><span id="headerTime" class="text-yellow-400"></span></div>
+                    <p id="startDateDisplay" class="text-[9px] text-green-300 font-black"></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-right text-white">
+                    <p class="text-[10px] opacity-70 uppercase">RECORDS: <span id="recCount" class="text-yellow-400">0</span></p>
+                    <h2 id="mainTotal" class="text-4xl font-black">₹0</h2>
+                </div>
+                <button id="gearIcon" class="text-4xl text-white pointer-events-none">⚙️</button>
+            </div>
+        </div>
+
+        <div class="p-6">
+            <div id="catGrid" class="grid grid-cols-2 md:grid-cols-7 gap-3 mb-6"></div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="entry-dash">
+                    <h3 class="text-xl border-b-4 border-green-600 mb-4 italic uppercase">New Entry</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="date" id="eDate" class="border-2 border-black p-2 rounded">
+                        <input type="tel" id="eMob" placeholder="Mobile" class="border-2 border-black p-2 rounded">
+                        <select id="eCat" class="border-2 border-black p-2 rounded"></select>
+                        <input type="text" id="eDesc" placeholder="Remark" class="border-2 border-black p-2 rounded">
+                        <input type="number" id="eAmt" placeholder="Amount" class="border-2 border-black p-2 rounded">
+                        <select id="eType" class="border-2 border-black p-2 rounded"><option value="CR">IN (+)</option><option value="DR">OUT (-)</option></select>
+                    </div>
+                    <button onclick="saveData()" class="w-full py-4 mt-5 rounded-xl text-xl btn-style bg-green-600 text-white font-black">SAVE DATA ✅</button>
+                </div>
+
+                <div class="filter-dash">
+                    <h3 class="text-xl border-b-4 border-blue-600 mb-4 italic uppercase">Search & Tools</h3>
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <input type="date" id="fDate" class="text-xs border-2 border-black p-1">
+                        <input type="date" id="tDate" class="text-xs border-2 border-black p-1">
+                        <input type="tel" id="sMob" placeholder="Mobile" class="text-xs border-2 border-black p-1">
+                    </div>
+                    
+                    <div id="filterCatList" class="flex flex-wrap gap-2 mb-4"></div>
+                    
+                    <div class="grid grid-cols-3 gap-3">
+                        <button id="toolPdf" onclick="downloadPDF()" class="bg-orange-600 py-3 rounded-lg btn-style text-white text-[10px] font-black">PDF REPORT</button>
+                        <button id="toolWa" onclick="sendWhatsApp()" class="bg-green-600 py-3 rounded-lg btn-style text-white text-[10px] font-black">WHATSAPP</button>
+                        <button id="toolDelAll" onclick="deleteAll()" class="bg-red-600 py-3 rounded-lg btn-style text-white text-[10px] font-black">DELETE ALL</button>
+                        <button id="toolExp" onclick="exportData()" class="bg-emerald-700 py-3 rounded-lg btn-style text-white text-[10px] font-black">EXPORT JSON</button>
+                        <button id="toolImp" onclick="document.getElementById('importFile').click()" class="bg-yellow-600 py-3 rounded-lg btn-style text-white text-[10px] font-black">IMPORT JSON</button>
+                        <input type="file" id="importFile" onchange="importData(event)" class="hidden">
+                        <button onclick="refresh()" class="col-span-1 bg-slate-800 text-white py-3 rounded-lg btn-style text-[10px] font-black">REFRESH 🔎</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 bg-white border-4 border-black rounded-3xl overflow-hidden table-area">
+                <table class="w-full text-sm" id="mainTable">
+                    <thead class="bg-black text-white"><tr><th class="p-2">DATE</th><th class="p-2">MOBILE</th><th class="p-2">CAT</th><th class="p-2">REMARK</th><th class="p-2 text-right">AMOUNT</th><th class="p-2 text-center">ACTION</th></tr></thead>
+                    <tbody id="resTable" class="text-center font-bold"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="setModal" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-2">
+    <div class="cp-card">
+        <div class="flex justify-between items-center mb-4 border-b-4 border-black pb-2">
+            <h2 class="text-2xl italic uppercase font-black">Control Panel (42 Options)</h2>
+            <button onclick="closeSettings()" class="bg-red-600 text-white px-8 py-1 rounded-xl btn-style font-black">CLOSE</button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="space-y-1">
+                <p class="bg-blue-800 text-white p-1 text-[10px] font-black uppercase">1. Color Control</p>
+                <div class="setting-row"><span>01. Banner Color</span><input type="color" id="s01"></div>
+                <div class="setting-row"><span>02. Name Color</span><input type="color" id="s02"></div>
+                <div class="setting-row"><span>03. Outline Color</span><input type="color" id="s03"></div>
+                <div class="setting-row"><span>04. Pattern Btm</span><input type="color" id="s04"></div>
+                <div class="setting-row"><span>05. Cat Letter Col</span><input type="color" id="s05"></div>
+                <div class="setting-row"><span>06. Cat Number Col</span><input type="color" id="s06"></div>
+                <div class="setting-row"><span>39. Name Out-Col</span><input type="color" id="s39"></div>
+            </div>
+            <div class="space-y-1">
+                <p class="bg-green-800 text-white p-1 text-[10px] font-black uppercase">2. Size Control</p>
+                <div class="setting-row"><span>07. Banner Name</span><input type="text" id="s07" class="w-24"></div>
+                <div class="setting-row"><span>08. Date/Time Size</span><input type="number" id="s08" class="w-12"></div>
+                <div class="setting-row"><span>09. Cat Letter Size</span><input type="number" id="s09" class="w-12"></div>
+                <div class="setting-row"><span>10. Cat Number Size</span><input type="number" id="s10" class="w-12"></div>
+                <div class="setting-row"><span>11. Entry Font Size</span><input type="number" id="s11" class="w-12"></div>
+                <div class="setting-row"><span>12. Width %</span><input type="number" id="s12" class="w-12"></div>
+                <div class="setting-row"><span>13. Height px</span><input type="number" id="s13" class="w-12"></div>
+            </div>
+            <div class="space-y-1">
+                <p class="bg-orange-800 text-white p-1 text-[10px] font-black uppercase">3. Switch Control</p>
+                <div class="setting-row"><span>14. Back Button Sw</span><input type="checkbox" id="s14"></div>
+                <div class="setting-row"><span>15. Gear Icon Hide</span><input type="checkbox" id="s15"></div>
+                <div class="setting-row"><span>16. Show Date</span><input type="checkbox" id="s16"></div>
+                <div class="setting-row"><span>17. Show Clock</span><input type="checkbox" id="s17"></div>
+                <div class="setting-row"><span>18. Screen 1 Grand</span><input type="checkbox" id="s18"></div>
+                <div class="setting-row"><span>19. Screen 1 Cat</span><input type="checkbox" id="s19"></div>
+                <div class="setting-row"><span>20. Edit Pen Sw</span><input type="checkbox" id="s20"></div>
+                <div class="setting-row"><span>21. Single Delete</span><input type="checkbox" id="s21"></div>
+                <div class="setting-row"><span>22. All Delete Sw</span><input type="checkbox" id="s22"></div>
+                <div class="setting-row"><span>24. PDF Report Sw</span><input type="checkbox" id="s24"></div>
+                <div class="setting-row"><span>25. WhatsApp Sw</span><input type="checkbox" id="s25"></div>
+                <div class="setting-row"><span>26. Export Sw (Dash)</span><input type="checkbox" id="s26"></div>
+                <div class="setting-row"><span>27. Import Sw (Dash)</span><input type="checkbox" id="s27"></div>
+                <div class="setting-row"><span class="text-blue-600">41. Bell Icon Sw</span><input type="checkbox" id="s41"></div>
+            </div>
+            <div class="space-y-1">
+                <p class="bg-red-800 text-white p-1 text-[10px] font-black uppercase">4. Security Control</p>
+                <div id="catRenArea" class="space-y-1"></div>
+                <div class="setting-row"><span>33. Login PIN</span><input type="text" id="s33" class="w-16"></div>
+                <div class="setting-row"><span>34. Admin PIN</span><input type="text" id="s34" class="w-16"></div>
+                <div class="setting-row"><span>35. Multi-Filter Sw</span><input type="checkbox" id="s35"></div>
+                <div class="setting-row"><span>36. Expiry Date</span><input type="date" id="s36"></div>
+                <div class="setting-row"><span>40. System Lock</span><input type="checkbox" id="s40"></div>
+            </div>
+        </div>
+        <button onclick="saveSettings()" class="w-full bg-blue-700 text-white py-6 mt-6 rounded-3xl text-3xl btn-style font-black uppercase">SAVE ALL SETTINGS ✅</button>
+    </div>
+</div>
+
+<script>
+let db = JSON.parse(localStorage.getItem('saha_v81_db')) || [];
+let cfg = JSON.parse(localStorage.getItem('saha_v81_cfg')) || {
+    title: "SAHA-2026", headCol: "#0f172a", nameCol: "#ffffff", outCol: "#000000", btmCol: "#000000",
+    cLetCol: "#475569", cNumCol: "#1e40af", nameOut: "transparent", scrW: 95, scrH: 850, fsDT: 14, fsCL: 14, fsCN: 32, fsEnt: 18,
+    swBack: true, swGear: false, swDate: true, swClock: true, swG_L: true, swC_L: true, 
+    swPen: true, swTrDel: true, swAllDel: true, swPdf: true, swWa: true,
+    swExp: true, swImp: true, swBell: true, // New 41 Option
+    lgs: true, lcs: true, mfs: true, lock: false,
+    loginPin: "1982", adminPin: "1020", expDate: "2026-12-31", startingDate: "",
+    cats: ["TICKET", "FINANCE", "RO", "OTHER", "SHOP", "GENERAL", "EXTRA"],
+    catStatus: [true, true, true, true, true, true, true]
+};
+
+let isGShow, isCShow, activeFilters = [];
+
+function handleLogin() {
+    if(new Date() > new Date(cfg.expDate)) return alert("EXPIRED!");
+    if(document.getElementById('loginPass').value === cfg.loginPin) {
+        isGShow = document.getElementById('swGrand').checked;
+        isCShow = document.getElementById('swCat').checked;
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('appPage').classList.remove('hidden');
+        init();
+    } else alert("WRONG PIN!");
+}
+
+function init() {
+    document.documentElement.style.setProperty('--p-bg', cfg.headCol);
+    document.documentElement.style.setProperty('--n-col', cfg.nameCol);
+    document.documentElement.style.setProperty('--btm', cfg.btmCol);
+    document.documentElement.style.setProperty('--out', cfg.outCol);
+    document.documentElement.style.setProperty('--c-let', cfg.cLetCol);
+    document.documentElement.style.setProperty('--c-num', cfg.cNumCol);
+    document.documentElement.style.setProperty('--n-out', cfg.nameOut);
+    
+    document.getElementById('mainContainer').style.width = cfg.scrW + "%";
+    document.getElementById('mainContainer').style.minHeight = cfg.scrH + "px";
+    document.getElementById('dispTitle').innerText = cfg.title;
+    document.getElementById('loginTitleDisp').innerText = cfg.title;
+    document.getElementById('backBtn').style.display = cfg.swBack ? 'block' : 'none';
+    
+    document.getElementById('lSwG').style.display = cfg.lgs ? 'block' : 'none';
+    document.getElementById('lSwC').style.display = cfg.lcs ? 'block' : 'none';
+    if(!cfg.lgs && !cfg.lcs) document.getElementById('loginSwArea').style.display = 'none';
+
+    document.getElementById('gearIcon').className = cfg.swGear ? "text-4xl text-white gear-hidden" : "text-4xl text-white";
+    document.getElementById('mainTotal').className = isGShow ? "text-4xl font-black" : "text-4xl font-black blur-val";
+    document.getElementById('dateTimeBox').style.fontSize = cfg.fsDT + "px";
+
+    // Show Starting Date if set
+    document.getElementById('startDateDisplay').innerText = cfg.startingDate ? "RUNNING FROM: " + cfg.startingDate.split('-').reverse().join('/') : "";
+
+    document.getElementById('toolExp').style.display = cfg.swExp ? 'block' : 'none';
+    document.getElementById('toolImp').style.display = cfg.swImp ? 'block' : 'none';
+    document.getElementById('toolPdf').style.display = cfg.swPdf ? 'block' : 'none';
+    document.getElementById('toolWa').style.display = cfg.swWa ? 'block' : 'none';
+    document.getElementById('toolDelAll').style.display = cfg.swAllDel ? 'block' : 'none';
+
+    renderUI(); refresh();
+    setInterval(() => {
+        const n = new Date();
+        document.getElementById('headerDate').innerText = cfg.swDate ? n.toLocaleDateString('en-GB') : "";
+        document.getElementById('headerTime').innerText = cfg.swClock ? n.toLocaleTimeString('en-GB') : "";
+    }, 1000);
+}
+
+// BELL ICON FUNCTIONS
+function openBellDate() {
+    if(cfg.swBell) {
+        document.getElementById('bellStartDate').showPicker();
+    } else {
+        alert("Bell Icon Option is Locked in Settings!");
+    }
+}
+
+function setStartingDate() {
+    let selectedDate = document.getElementById('bellStartDate').value;
+    if(selectedDate) {
+        cfg.startingDate = selectedDate;
+        localStorage.setItem('saha_v81_cfg', JSON.stringify(cfg));
+        alert("Software set to run from: " + selectedDate);
+        location.reload();
+    }
+}
+
+function renderUI() {
+    const grid = document.getElementById('catGrid'), eSel = document.getElementById('eCat'), fList = document.getElementById('filterCatList');
+    grid.innerHTML = ""; eSel.innerHTML = "";
+    fList.innerHTML = `<button onclick="toggleFilter('ALL')" id="btn_ALL" class="bg-blue-900 text-white px-3 py-1 rounded-lg btn-style text-[10px] filter-btn-active">ALL</button>`;
+    
+    cfg.cats.forEach((c, i) => {
+        if(cfg.catStatus[i]) {
+            grid.innerHTML += `<div class="cat-card"><p style="font-size:${cfg.fsCL}px; color:var(--c-let)">${c}</p><h3 class="${!isCShow?'blur-val':''}" style="font-size:${cfg.fsCN}px; color:var(--c-num)">₹<span id="sum_${c}">0</span></h3></div>`;
+            eSel.innerHTML += `<option value="${c}">${c}</option>`;
+            fList.innerHTML += `<button onclick="toggleFilter('${c}')" id="btn_${c}" class="bg-blue-900 text-white px-3 py-1 rounded-lg btn-style text-[10px]">${c}</button>`;
+        }
+    });
+}
+
+function toggleFilter(cat) {
+    if(!cfg.mfs) { activeFilters = (cat === 'ALL') ? [] : [cat]; } 
+    else {
+        if(cat === 'ALL') activeFilters = [];
+        else {
+            const idx = activeFilters.indexOf(cat);
+            if(idx > -1) activeFilters.splice(idx, 1);
+            else activeFilters.push(cat);
+        }
+    }
+    updateFilterUI(); refresh();
+}
+
+function updateFilterUI() {
+    document.querySelectorAll('#filterCatList button').forEach(b => b.classList.remove('filter-btn-active'));
+    if(activeFilters.length === 0) document.getElementById('btn_ALL').classList.add('filter-btn-active');
+    else activeFilters.forEach(c => document.getElementById('btn_'+c)?.classList.add('filter-btn-active'));
+}
+
+function refresh() {
+    let html = "", grand = 0, cSums = {}; cfg.cats.forEach(c => cSums[c] = 0);
+    const fD = document.getElementById('fDate').value, tD = document.getElementById('tDate').value, sM = document.getElementById('sMob').value;
+
+    let filtered = db.filter(t => {
+        // Bell Starting Date Logic
+        const mBell = (!cfg.startingDate || t.date >= cfg.startingDate);
+        const mCat = (activeFilters.length === 0 || activeFilters.includes(t.cat));
+        const mDate = (!fD || t.date >= fD) && (!tD || t.date <= tD);
+        const mMob = (!sM || t.mob.includes(sM));
+        return mBell && mCat && mDate && mMob;
+    });
+
+    filtered.sort((a,b) => b.id - a.id).forEach(t => {
+        let v = (t.type === "CR") ? t.amt : -t.amt; cSums[t.cat] += v; grand += v;
+        html += `<tr class="border-b"><td class="p-2">${t.date.split('-').reverse().join('/')}</td><td class="p-2">${t.mob}</td><td class="p-2">${t.cat}</td><td class="p-2 text-blue-700">${t.desc}</td><td class="p-2 text-right ${t.type==='CR'?'text-green-600':'text-red-600'}">₹${t.amt.toLocaleString()}</td><td class="p-2">${cfg.swPen?'🖊️':''} ${cfg.swTrDel?`<button onclick="del(${t.id})" class="text-red-600">✖</button>`:''}</td></tr>`;
+    });
+    document.getElementById('resTable').innerHTML = html;
+    document.getElementById('mainTotal').innerText = "₹" + grand.toLocaleString();
+    document.getElementById('recCount').innerText = filtered.length;
+    cfg.cats.forEach(c => { if(document.getElementById('sum_'+c)) document.getElementById('sum_'+c).innerText = (cSums[c] || 0).toLocaleString(); });
+}
+
+function saveData() {
+    let entry = { id: Date.now(), date: document.getElementById('eDate').value, mob: document.getElementById('eMob').value || "-", cat: document.getElementById('eCat').value, desc: document.getElementById('eDesc').value || "-", amt: parseFloat(document.getElementById('eAmt').value || 0), type: document.getElementById('eType').value };
+    if(!entry.date || entry.amt <= 0) return alert("Fill All!");
+    db.push(entry); localStorage.setItem('saha_v81_db', JSON.stringify(db)); refresh();
+}
+
+function exportData() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({cfg, db}));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", cfg.title + "_backup.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imported = JSON.parse(e.target.result);
+            if(imported.cfg && imported.db) {
+                localStorage.setItem('saha_v81_cfg', JSON.stringify(imported.cfg));
+                localStorage.setItem('saha_v81_db', JSON.stringify(imported.db));
+                alert("Import Success!"); location.reload();
+            }
+        };
+        reader.readAsText(file);
+    }
+}
+
+function openSettings() {
+    if(prompt("ADMIN PIN:") === cfg.adminPin) {
+        document.getElementById('setModal').classList.remove('hidden');
+        document.getElementById('s01').value = cfg.headCol; document.getElementById('s02').value = cfg.nameCol;
+        document.getElementById('s03').value = cfg.outCol; document.getElementById('s04').value = cfg.btmCol;
+        document.getElementById('s05').value = cfg.cLetCol; document.getElementById('s06').value = cfg.cNumCol;
+        document.getElementById('s07').value = cfg.title; document.getElementById('s08').value = cfg.fsDT;
+        document.getElementById('s09').value = cfg.fsCL; document.getElementById('s10').value = cfg.fsCN;
+        document.getElementById('s11').value = cfg.fsEnt; document.getElementById('s12').value = cfg.scrW;
+        document.getElementById('s13').value = cfg.scrH; document.getElementById('s14').checked = cfg.swBack;
+        document.getElementById('s15').checked = cfg.swGear; document.getElementById('s16').checked = cfg.swDate;
+        document.getElementById('s17').checked = cfg.swClock; document.getElementById('s18').checked = cfg.lgs;
+        document.getElementById('s19').checked = cfg.lcs; document.getElementById('s20').checked = cfg.swPen;
+        document.getElementById('s21').checked = cfg.swTrDel; document.getElementById('s22').checked = cfg.swAllDel;
+        document.getElementById('s24').checked = cfg.swPdf; document.getElementById('s25').checked = cfg.swWa;
+        document.getElementById('s26').checked = cfg.swExp; document.getElementById('s27').checked = cfg.swImp;
+        document.getElementById('s41').checked = cfg.swBell; // New Bell Sw
+        document.getElementById('s33').value = cfg.loginPin; document.getElementById('s34').value = cfg.adminPin;
+        document.getElementById('s35').checked = cfg.mfs; document.getElementById('s36').value = cfg.expDate;
+        document.getElementById('s39').value = cfg.nameOut; document.getElementById('s40').checked = cfg.lock;
+        let area = document.getElementById('catRenArea'); area.innerHTML = "";
+        cfg.cats.forEach((c, i) => {
+            area.innerHTML += `<div class="setting-row"><span>${28+i}. ${c}</span><div class="flex gap-1"><input type="text" id="cn_${i}" value="${c}" class="w-16 text-[9px] border"><input type="checkbox" id="cs_${i}" ${cfg.catStatus[i]?'checked':''}></div></div>`;
+        });
+    }
+}
+
+function saveSettings() {
+    cfg.headCol = document.getElementById('s01').value; cfg.nameCol = document.getElementById('s02').value;
+    cfg.outCol = document.getElementById('s03').value; cfg.btmCol = document.getElementById('s04').value;
+    cfg.cLetCol = document.getElementById('s05').value; cfg.cNumCol = document.getElementById('s06').value;
+    cfg.title = document.getElementById('s07').value; cfg.fsDT = document.getElementById('s08').value;
+    cfg.fsCL = document.getElementById('s09').value; cfg.fsCN = document.getElementById('s10').value;
+    cfg.fsEnt = document.getElementById('s11').value; cfg.scrW = document.getElementById('s12').value;
+    cfg.scrH = document.getElementById('s13').value; cfg.swBack = document.getElementById('s14').checked;
+    cfg.swGear = document.getElementById('s15').checked; cfg.swDate = document.getElementById('s16').checked;
+    cfg.swClock = document.getElementById('s17').checked; cfg.lgs = document.getElementById('s18').checked;
+    cfg.lcs = document.getElementById('s19').checked; cfg.swPen = document.getElementById('s20').checked;
+    cfg.swTrDel = document.getElementById('s21').checked; cfg.swAllDel = document.getElementById('s22').checked;
+    cfg.swPdf = document.getElementById('s24').checked; cfg.swWa = document.getElementById('s25').checked;
+    cfg.swExp = document.getElementById('s26').checked; cfg.swImp = document.getElementById('s27').checked;
+    cfg.swBell = document.getElementById('s41').checked; // Save Bell Sw
+    cfg.loginPin = document.getElementById('s33').value; cfg.adminPin = document.getElementById('s34').value;
+    cfg.mfs = document.getElementById('s35').checked; cfg.expDate = document.getElementById('s36').value;
+    cfg.nameOut = document.getElementById('s39').value; cfg.lock = document.getElementById('s40').checked;
+    cfg.cats.forEach((_, i) => { cfg.cats[i] = document.getElementById(`cn_${i}`).value.toUpperCase(); cfg.catStatus[i] = document.getElementById(`cs_${i}`).checked; });
+    localStorage.setItem('saha_v81_cfg', JSON.stringify(cfg)); location.reload();
+}
+
+function downloadPDF() {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+    doc.text(cfg.title + " Report", 14, 15);
+    doc.autoTable({ html: '#mainTable', startY: 25 });
+    doc.save(cfg.title + '_Report.pdf');
+}
+
+function sendWhatsApp() {
+    let msg = `*${cfg.title}*\nTotal: ${document.getElementById('mainTotal').innerText}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function del(id) { if(confirm("Delete?")) { db = db.filter(x => x.id !== id); localStorage.setItem('saha_v81_db', JSON.stringify(db)); refresh(); } }
+function closeSettings() { document.getElementById('setModal').classList.add('hidden'); }
+function deleteAll() { if(confirm("Clear All?")) { db = []; localStorage.setItem('saha_v81_db', JSON.stringify(db)); refresh(); } }
+</script>
+</body>
+</html>
